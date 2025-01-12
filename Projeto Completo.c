@@ -18,7 +18,7 @@ typedef struct {
     int id;
     char descricao[100];
     double valor;
-    char dataEntrega[11]; // formato dd/mm/aaaa
+    char dataEntrega[9]; // formato ddmmaaaa
     int clienteID;
 } Projeto;
 
@@ -50,9 +50,9 @@ void consultarEstoque();
 void removerProduto();
 void atualizarQuantidade();
 void pesquisarProjetoPorID(int id);
-void pesquisarProjetoPorDescricao(char* descricao);
+void pesquisarProjetoPorDescricao(char *descricao);
 int lerInteiro();
-int validarData(char* data);
+int validarData(char *data);
 
 int main() {
     int opcao;
@@ -80,31 +80,38 @@ int main() {
 int lerInteiro() {
     int valor;
     while (scanf("%d", &valor) != 1) {
-        printf("Erro: Por favor, insira ID valido.\n");
-        while(getchar() != '\n'); // Limpa o buffer
+        printf("Erro: Por favor, insira um valor valido.\n");
+        while (getchar() != '\n'); // Limpa o buffer
     }
     return valor;
 }
 
-int validarData(char* data) {
-    int dia, mes, ano;
-    if (sscanf(data, "%2d/%2d/%4d", &dia, &mes, &ano) != 3) {
-        printf("Erro: Formato de data invalido. Use dd/mm/aaaa.\n");
+int validarData(char *data) {
+    if (strlen(data) != 8 || strspn(data, "0123456789") != 8) {
+        printf("Erro: Formato de data invalido. Use ddmmaaaa.\n");
         return 0;
     }
+
+    int dia = atoi(data);
+    int mes = atoi(data + 2);
+    int ano = atoi(data + 4);
+
     if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900 || ano > 2100) {
         printf("Erro: Data invalida. Verifique os valores de dia, mes ou ano.\n");
         return 0;
     }
 
-    // Verificação adicional para dias por mês (ignora anos bissextos)
+    // Verificação adicional para dias por mês
     if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
         printf("Erro: O mes %d possui no maximo 30 dias.\n", mes);
         return 0;
-    } else if (mes == 2 && dia > 29) {
-        printf("Erro: Fevereiro pode ter no maximo 29 dias.\n");
-        return 0;
+    } else if (mes == 2) {
+        if (dia > 29 || (dia == 29 && (ano % 4 != 0 || (ano % 100 == 0 && ano % 400 != 0)))) {
+            printf("Erro: Fevereiro possui no maximo 28 ou 29 dias em anos bissextos.\n");
+            return 0;
+        }
     }
+
     return 1;
 }
 
@@ -169,14 +176,14 @@ void cadastrarProjeto() {
     scanf("%lf", &projetos[totalProjetos].valor);
 
     // Validação da data de entrega
-    char dataEntrega[11];
-    printf("Data de Entrega (dd/mm/aaaa): ");
+    char dataEntrega[9];
+    printf("Data de Entrega (ddmmaaaa): ");
     while (1) {
-        scanf(" %10[^\n]", dataEntrega);
+        scanf(" %8[^\n]", dataEntrega);
         if (validarData(dataEntrega)) {
             break;
         } else {
-            printf("Por favor, insira uma data valida (dd/mm/aaaa): ");
+            printf("Por favor, insira uma data valida (ddmmaaaa): ");
         }
     }
 
