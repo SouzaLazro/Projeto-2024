@@ -88,30 +88,45 @@ int lerInteiro() {
     return valor;
 }
 
+#include <time.h> // Adicione essa biblioteca
+
 int validarData(char *data) {
     if (strlen(data) != 8 || strspn(data, "0123456789") != 8) {
-        printf("Erro: Formato de data invalido. Use ddmmaaaa.\n");
+        printf("Erro: Formato de data inválido. Use ddmmaaaa.\n");
         return 0;
     }
 
-    // Extrair partes da data
-    int dia = (data[0] - '0') * 10 + (data[1] - '0');
-    int mes = (data[2] - '0') * 10 + (data[3] - '0');
+    int dia = atoi(data);
+    int mes = atoi(data + 2);
     int ano = atoi(data + 4);
 
     if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900 || ano > 2100) {
-        printf("Erro: Data invalida. Verifique os valores de dia, mes ou ano.\n");
+        printf("Erro: Data inválida. Verifique os valores de dia, mês ou ano.\n");
         return 0;
     }
 
-    // Verificar o número de dias no mês
-    int diasNoMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0)) {
-        diasNoMes[1] = 29; // Ano bissexto
+    // Verificação adicional para dias por mês
+    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
+        printf("Erro: O mês %d possui no máximo 30 dias.\n", mes);
+        return 0;
+    } else if (mes == 2) {
+        if (dia > 29 || (dia == 29 && (ano % 4 != 0 || (ano % 100 == 0 && ano % 400 != 0)))) {
+            printf("Erro: Fevereiro possui no máximo 28 ou 29 dias em anos bissextos.\n");
+            return 0;
+        }
     }
 
-    if (dia > diasNoMes[mes - 1]) {
-        printf("Erro: O mes %d possui no maximo %d dias.\n", mes, diasNoMes[mes - 1]);
+    // Verificação se a data é anterior à data atual
+    time_t t = time(NULL);
+    struct tm tmAtual = *localtime(&t);
+
+    int anoAtual = tmAtual.tm_year + 1900;
+    int mesAtual = tmAtual.tm_mon + 1;
+    int diaAtual = tmAtual.tm_mday;
+
+    // Comparação das datas
+    if (ano < anoAtual || (ano == anoAtual && mes < mesAtual) || (ano == anoAtual && mes == mesAtual && dia < diaAtual)) {
+        printf("Erro: A data não pode ser anterior à data atual.\n");
         return 0;
     }
 
