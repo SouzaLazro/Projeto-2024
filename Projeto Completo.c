@@ -18,7 +18,7 @@ typedef struct {
     int id;
     char descricao[100];
     double valor;
-    char dataEntrega[9]; // formato dd/mm/aaaa
+    char dataEntrega[11]; // formato dd/mm/aaaa
     int clienteID;
 } Projeto;
 
