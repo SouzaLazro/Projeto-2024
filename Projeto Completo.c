@@ -94,8 +94,9 @@ int validarData(char *data) {
         return 0;
     }
 
-    int dia = atoi(data);
-    int mes = atoi(data + 2);
+    // Extrair partes da data
+    int dia = (data[0] - '0') * 10 + (data[1] - '0');
+    int mes = (data[2] - '0') * 10 + (data[3] - '0');
     int ano = atoi(data + 4);
 
     if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900 || ano > 2100) {
@@ -103,15 +104,15 @@ int validarData(char *data) {
         return 0;
     }
 
-    // Verificação adicional para dias por mês
-    if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
-        printf("Erro: O mes %d possui no maximo 30 dias.\n", mes);
+    // Verificar o número de dias no mês
+    int diasNoMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0)) {
+        diasNoMes[1] = 29; // Ano bissexto
+    }
+
+    if (dia > diasNoMes[mes - 1]) {
+        printf("Erro: O mes %d possui no maximo %d dias.\n", mes, diasNoMes[mes - 1]);
         return 0;
-    } else if (mes == 2) {
-        if (dia > 29 || (dia == 29 && (ano % 4 != 0 || (ano % 100 == 0 && ano % 400 != 0)))) {
-            printf("Erro: Fevereiro possui no maximo 28 ou 29 dias em anos bissextos.\n");
-            return 0;
-        }
     }
 
     return 1;
