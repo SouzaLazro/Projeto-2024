@@ -18,7 +18,7 @@ typedef struct {
     int id;
     char descricao[100];
     double valor;
-    char dataEntrega[11]; // formato dd/mm/aaaa
+    char dataEntrega[9]; // formato dd/mm/aaaa
     int clienteID;
 } Projeto;
 
@@ -97,7 +97,7 @@ int validarData(char* data) {
         return 0;
     }
 
-    // Verificação adicional para dias por mês (ignora anos bissextos)
+    // VerificaÃ§Ã£o adicional para dias por mÃªs (ignora anos bissextos)
     if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {
         printf("Erro: O mes %d possui no maximo 30 dias.\n", mes);
         return 0;
@@ -168,7 +168,7 @@ void cadastrarProjeto() {
     printf("Valor: ");
     scanf("%lf", &projetos[totalProjetos].valor);
 
-    // Validação da data de entrega
+    // ValidaÃ§Ã£o da data de entrega
     char dataEntrega[11];
     printf("Data de Entrega (dd/mm/aaaa): ");
     while (1) {
