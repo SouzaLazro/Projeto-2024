@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <locale.h>
 
 #define MAX_CLIENTES 100
 #define MAX_PROJETOS 100
@@ -55,6 +56,7 @@ int lerInteiro();
 int validarData(char *data);
 
 int main() {
+    setlocale(LC_ALL, "portuguese");
     int opcao;
     do {
         printf("\nMenu Principal:\n");
