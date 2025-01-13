@@ -271,7 +271,8 @@ void menuCadastro() {
         printf("1. Cadastrar Cliente\n");
         printf("2. Cadastrar Projeto\n");
         printf("3. Excluir Cliente\n");
-        printf("4. Voltar\n");
+        printf("4. Excluir Projeto\n");
+        printf("5. Voltar\n");
         printf("Escolha uma opção: ");
         opcao = lerInteiro();
 
@@ -279,10 +280,40 @@ void menuCadastro() {
             case 1: cadastrarCliente(); break;
             case 2: cadastrarProjeto(); break;
             case 3: excluirCliente(); break;
-            case 4: break;
+            case 4: excluirProjeto(); break; //
+            case 5: break;
             default: printf("Opção inválida!\n");
         }
-    } while (opcao != 4);
+    } while (opcao != 5);
+}
+
+
+void excluirProjeto() {
+    if (totalProjetos == 0) {
+        printf("Erro: Não há projetos cadastrados.\n");
+        return;
+    }
+
+    int id;
+    printf("Digite o ID do projeto a ser excluído: ");
+    id = lerInteiro();
+
+    int encontrado = 0;
+    for (int i = 0; i < totalProjetos; i++) {
+        if (projetos[i].id == id) {
+            encontrado = 1;
+            for (int j = i; j < totalProjetos - 1; j++) {
+                projetos[j] = projetos[j + 1];
+            }
+            totalProjetos--;
+            printf("Projeto excluído com sucesso!\n");
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Erro: Projeto com ID %d não encontrado.\n", id);
+    }
 }
 
 
