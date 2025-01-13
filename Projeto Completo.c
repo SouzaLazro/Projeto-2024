@@ -160,6 +160,12 @@ void cadastrarCliente() {
         }
     }
 
+    FILE *file = fopen("clientes.txt", "a");
+    if (file == NULL) {
+        printf("Erro: Não foi possível abrir o arquivo.\n");
+        return;
+    }
+
     clientes[totalClientes].id = id;
     printf("Nome: ");
     scanf(" %49[^\n]", clientes[totalClientes].nome);
@@ -175,9 +181,17 @@ void cadastrarCliente() {
             printf("Erro: O celular deve ter exatamente 11 dígitos numéricos. Tente novamente: ");
         }
     }
+
+    fprintf(file, "ID: %d\n", clientes[totalClientes].id);
+    fprintf(file, "Nome: %s\n", clientes[totalClientes].nome);
+    fprintf(file, "Email: %s\n", clientes[totalClientes].email);
+    fprintf(file, "Celular: %s\n\n", clientes[totalClientes].celular);
+    fclose(file);
+
     totalClientes++;
-    printf("Cliente cadastrado com sucesso!\n");
+    printf("Cliente cadastrado com sucesso e salvo no arquivo!\n");
 }
+
 void excluirCliente() {
     if (totalClientes == 0) {
         printf("Erro: Não há clientes cadastrados.\n");
@@ -196,15 +210,37 @@ void excluirCliente() {
                 clientes[j] = clientes[j + 1];
             }
             totalClientes--;
-            printf("Cliente excluído com sucesso!\n");
             break;
         }
     }
 
     if (!encontrado) {
         printf("Erro: Cliente com ID %d não encontrado.\n", id);
+        return;
     }
+
+    // Atualiza o arquivo "clientes.txt"
+    FILE *file = fopen("clientes_temp.txt", "w");
+    if (file == NULL) {
+        printf("Erro: Não foi possível abrir o arquivo.\n");
+        return;
+    }
+
+    for (int i = 0; i < totalClientes; i++) {
+        fprintf(file, "ID: %d\n", clientes[i].id);
+        fprintf(file, "Nome: %s\n", clientes[i].nome);
+        fprintf(file, "Email: %s\n", clientes[i].email);
+        fprintf(file, "Celular: %s\n\n", clientes[i].celular);
+    }
+
+    fclose(file);
+    remove("clientes.txt");
+    rename("clientes_temp.txt", "clientes.txt");
+
+    printf("Cliente excluído com sucesso!\n");
 }
+
+
 
 void cadastrarProjeto() {
     if (totalProjetos >= MAX_PROJETOS) {
