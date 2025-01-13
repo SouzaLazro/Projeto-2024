@@ -20,7 +20,7 @@ typedef struct {
     int id;
     char descricao[100];
     double valor;
-    char dataEntrega[9]; // formato ddmmaaaa
+    char dataEntrega[9];
     int clienteID;
 } Projeto;
 
@@ -62,10 +62,10 @@ int main() {
     do {
         printf("\nMenu Principal:\n");
         printf("1. Cadastro\n");
-        printf("2. Visualizacao\n");
+        printf("2. Visualização\n");
         printf("3. Estoque\n");
         printf("4. Sair\n");
-        printf("Escolha uma opcao: ");
+        printf("Escolha uma opção: ");
         opcao = lerInteiro();
 
         switch (opcao) {
@@ -73,7 +73,7 @@ int main() {
             case 2: menuVisualizacao(); break;
             case 3: menuEstoque(); break;
             case 4: printf("Saindo do programa...\n"); break;
-            default: printf("Opcao invalida!\n");
+            default: printf("Opção inválida!\n");
         }
     } while (opcao != 4);
 
@@ -83,8 +83,8 @@ int main() {
 int lerInteiro() {
     int valor;
     while (scanf("%d", &valor) != 1) {
-        printf("Erro: Por favor, insira um valor valido.\n");
-        while (getchar() != '\n'); // Limpa o buffer
+        printf("Erro: Por favor, insira um valor válido.\n");
+        while (getchar() != '\n');
     }
     return valor;
 }
@@ -95,21 +95,18 @@ int validarData(char *data) {
         return 0;
     }
 
-    // Extrair partes da data
     int dia = (data[0] - '0') * 10 + (data[1] - '0');
     int mes = (data[2] - '0') * 10 + (data[3] - '0');
     int ano = (data[4] - '0') * 1000 + (data[5] - '0') * 100 + (data[6] - '0') * 10 + (data[7] - '0');
 
-    // Verificar validade do dia, mês e ano
     if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900 || ano > 2100) {
         printf("Erro: Data inválida. Verifique os valores de dia, mês ou ano.\n");
         return 0;
     }
 
-    // Verificação adicional para dias por mês
     int diasNoMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     if ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0)) {
-        diasNoMes[1] = 29; // Ano bissexto
+        diasNoMes[1] = 29;
     }
 
     if (dia > diasNoMes[mes - 1]) {
@@ -117,7 +114,6 @@ int validarData(char *data) {
         return 0;
     }
 
-    // Obter a data atual
     time_t t = time(NULL);
     struct tm tmAtual = *localtime(&t);
 
@@ -125,20 +121,26 @@ int validarData(char *data) {
     int mesAtual = tmAtual.tm_mon + 1;
     int diaAtual = tmAtual.tm_mday;
 
-    // Ajustar data atual para o dia seguinte
     tmAtual.tm_mday++;
     mktime(&tmAtual);
 
-    // Comparação das datas
     if (ano < anoAtual || (ano == anoAtual && mes < mesAtual) || (ano == anoAtual && mes == mesAtual && dia <= diaAtual)) {
         printf("Erro: A data não pode ser anterior ou igual à data atual.\n");
         return 0;
     }
 
+    tmAtual.tm_year += 7;
+    mktime(&tmAtual);
+
+    if (ano > tmAtual.tm_year + 1900 ||
+        (ano == tmAtual.tm_year + 1900 && mes > tmAtual.tm_mon + 1) ||
+        (ano == tmAtual.tm_year + 1900 && mes == tmAtual.tm_mon + 1 && dia > tmAtual.tm_mday)) {
+        printf("Erro: A data não pode ser superior a 7 anos após a data atual.\n");
+        return 0;
+    }
+
     return 1;
 }
-
-
 
 void cadastrarCliente() {
     if (totalClientes >= MAX_CLIENTES) {
@@ -153,7 +155,7 @@ void cadastrarCliente() {
 
     for (int i = 0; i < totalClientes; i++) {
         if (clientes[i].id == id) {
-            printf("Erro: ID ja existe.\n");
+            printf("Erro: ID já existe.\n");
             return;
         }
     }
@@ -163,14 +165,14 @@ void cadastrarCliente() {
     scanf(" %49[^\n]", clientes[totalClientes].nome);
     printf("Email: ");
     scanf(" %49[^\n]", clientes[totalClientes].email);
-    printf("Celular (11 digitos): ");
+    printf("Celular (11 dígitos): ");
     while (1) {
         scanf(" %19[^\n]", clientes[totalClientes].celular);
         if (strlen(clientes[totalClientes].celular) == 11 &&
             strspn(clientes[totalClientes].celular, "0123456789") == 11) {
             break;
         } else {
-            printf("Erro: O celular deve ter exatamente 11 digitos numericos. Tente novamente: ");
+            printf("Erro: O celular deve ter exatamente 11 dígitos numéricos. Tente novamente: ");
         }
     }
     totalClientes++;
@@ -190,17 +192,16 @@ void cadastrarProjeto() {
 
     for (int i = 0; i < totalProjetos; i++) {
         if (projetos[i].id == id) {
-            printf("Erro: ID do projeto ja existe.\n");
+            printf("Erro: ID do projeto já existe.\n");
             return;
         }
     }
 
-    printf("Descricao: ");
+    printf("Descrição: ");
     scanf(" %99[^\n]", projetos[totalProjetos].descricao);
     printf("Valor: ");
     scanf("%lf", &projetos[totalProjetos].valor);
 
-    // Validação da data de entrega
     char dataEntrega[9];
     printf("Data de Entrega (ddmmaaaa): ");
     while (1) {
@@ -208,7 +209,7 @@ void cadastrarProjeto() {
         if (validarData(dataEntrega)) {
             break;
         } else {
-            printf("Por favor, insira uma data valida (ddmmaaaa): ");
+            printf("Por favor, insira uma data válida (ddmmaaaa): ");
         }
     }
 
@@ -226,7 +227,7 @@ void cadastrarProjeto() {
     }
 
     if (clienteIndex == -1) {
-        printf("Erro: Cliente nao encontrado.\n");
+        printf("Erro: Cliente não encontrado.\n");
         return;
     }
 
@@ -515,9 +516,10 @@ void adicionarProduto() {
     scanf("%d", &estoque[totalEstoque].quantidade);
     printf("Preco unitario: ");
     scanf("%lf", &estoque[totalEstoque].preco);
+    printf("ID: %d\n", estoque[totalEstoque].id);
+    printf("Produto cadastrado com sucesso! \n");
 
     totalEstoque++;
-    printf("Produto cadastrado com sucesso!\n");
 }
 
 void consultarEstoque() {
