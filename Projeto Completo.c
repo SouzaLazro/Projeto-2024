@@ -178,6 +178,33 @@ void cadastrarCliente() {
     totalClientes++;
     printf("Cliente cadastrado com sucesso!\n");
 }
+void excluirCliente() {
+    if (totalClientes == 0) {
+        printf("Erro: Não há clientes cadastrados.\n");
+        return;
+    }
+
+    int id;
+    printf("Digite o ID do cliente a ser excluído: ");
+    id = lerInteiro();
+
+    int encontrado = 0;
+    for (int i = 0; i < totalClientes; i++) {
+        if (clientes[i].id == id) {
+            encontrado = 1;
+            for (int j = i; j < totalClientes - 1; j++) {
+                clientes[j] = clientes[j + 1];
+            }
+            totalClientes--;
+            printf("Cliente excluído com sucesso!\n");
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Erro: Cliente com ID %d não encontrado.\n", id);
+    }
+}
 
 void cadastrarProjeto() {
     if (totalProjetos >= MAX_PROJETOS) {
@@ -243,18 +270,21 @@ void menuCadastro() {
         printf("\nMenu de Cadastro:\n");
         printf("1. Cadastrar Cliente\n");
         printf("2. Cadastrar Projeto\n");
-        printf("3. Voltar\n");
-        printf("Escolha uma opcao: ");
-        scanf("%d", &opcao);
+        printf("3. Excluir Cliente\n");
+        printf("4. Voltar\n");
+        printf("Escolha uma opção: ");
+        opcao = lerInteiro();
 
         switch (opcao) {
             case 1: cadastrarCliente(); break;
             case 2: cadastrarProjeto(); break;
-            case 3: break;
-            default: printf("Opcao invalida!\n");
+            case 3: excluirCliente(); break;
+            case 4: break;
+            default: printf("Opção inválida!\n");
         }
-    } while (opcao != 3);
+    } while (opcao != 4);
 }
+
 
 void menuVisualizacao() {
     int opcao;
