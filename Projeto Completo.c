@@ -165,7 +165,7 @@ void cadastrarCliente() {
     scanf(" %49[^\n]", clientes[totalClientes].nome);
     printf("Email: ");
     scanf(" %49[^\n]", clientes[totalClientes].email);
-    printf("Celular (11 dígitos): ");
+    printf("Celular: ");
     while (1) {
         scanf(" %19[^\n]", clientes[totalClientes].celular);
         if (strlen(clientes[totalClientes].celular) == 11 &&
