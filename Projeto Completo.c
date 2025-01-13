@@ -371,7 +371,6 @@ void menuVisualizacao() {
         }
     } while (opcao != 3);
 }
-
 void visualizarClientes() {
     int opcaoPesquisa;
     do {
@@ -380,15 +379,23 @@ void visualizarClientes() {
         scanf("%d", &opcaoPesquisa);
 
         if (opcaoPesquisa == 1) {
+            FILE *file = fopen("clientes.txt", "r");
+            if (file == NULL) {
+                printf("Erro: Não foi possível abrir o arquivo.\n");
+                return;
+            }
+            Cliente cliente;
             printf("\nLista de Clientes:\n");
             printf("%-5s %-20s %-30s %-15s\n", "ID", "Nome", "Email", "Celular");
-            for (int i = 0; i < totalClientes; i++) {
+            while (fscanf(file, "ID: %d\nNome: %49[^\n]\nEmail: %49[^\n]\nCelular: %19[^\n]\n\n",
+                          &cliente.id, cliente.nome, cliente.email, cliente.celular) != EOF) {
                 printf("%-5d %-20s %-30s %-15s\n",
-                       clientes[i].id,
-                       clientes[i].nome,
-                       clientes[i].email,
-                       clientes[i].celular);
+                       cliente.id,
+                       cliente.nome,
+                       cliente.email,
+                       cliente.celular);
             }
+            fclose(file);
         } else if (opcaoPesquisa == 2) {
             menuPesquisaClientes();
         } else if (opcaoPesquisa == 3) {
@@ -399,6 +406,8 @@ void visualizarClientes() {
     } while (1);
 }
 
+
+
 void menuPesquisaClientes() {
     int opcaoPesquisa;
     do {
@@ -406,18 +415,23 @@ void menuPesquisaClientes() {
         printf("1. Pesquisar por ID\n2. Pesquisar por Nome\n3. Pesquisar por Email\n4. Pesquisar por Celular\n5. Voltar\nEscolha uma opcao: ");
         scanf("%d", &opcaoPesquisa);
 
+        FILE *file = fopen("clientes.txt", "r");
+        if (file == NULL) {
+            printf("Erro: Não foi possível abrir o arquivo.\n");
+            return;
+        }
+
+        Cliente cliente;
+        int encontrado = 0;
+
         if (opcaoPesquisa == 1) {
             int id;
             printf("Digite o ID do Cliente: ");
             id = lerInteiro();
-            int encontrado = 0;
-            for (int i = 0; i < totalClientes; i++) {
-                if (clientes[i].id == id) {
-                    printf("%-5d %-20s %-30s %-15s\n",
-                           clientes[i].id,
-                           clientes[i].nome,
-                           clientes[i].email,
-                           clientes[i].celular);
+            while (fscanf(file, "ID: %d\nNome: %49[^\n]\nEmail: %49[^\n]\nCelular: %19[^\n]\n\n",
+                          &cliente.id, cliente.nome, cliente.email, cliente.celular) != EOF) {
+                if (cliente.id == id) {
+                    printf("%-5d %-20s %-30s %-15s\n", cliente.id, cliente.nome, cliente.email, cliente.celular);
                     encontrado = 1;
                     break;
                 }
@@ -429,14 +443,10 @@ void menuPesquisaClientes() {
             char nome[50];
             printf("Digite o nome do Cliente: ");
             scanf(" %49[^\n]", nome);
-            int encontrado = 0;
-            for (int i = 0; i < totalClientes; i++) {
-                if (strstr(clientes[i].nome, nome) != NULL) {
-                    printf("%-5d %-20s %-30s %-15s\n",
-                           clientes[i].id,
-                           clientes[i].nome,
-                           clientes[i].email,
-                           clientes[i].celular);
+            while (fscanf(file, "ID: %d\nNome: %49[^\n]\nEmail: %49[^\n]\nCelular: %19[^\n]\n\n",
+                          &cliente.id, cliente.nome, cliente.email, cliente.celular) != EOF) {
+                if (strstr(cliente.nome, nome) != NULL) {
+                    printf("%-5d %-20s %-30s %-15s\n", cliente.id, cliente.nome, cliente.email, cliente.celular);
                     encontrado = 1;
                 }
             }
@@ -447,14 +457,10 @@ void menuPesquisaClientes() {
             char email[50];
             printf("Digite o email do Cliente: ");
             scanf(" %49[^\n]", email);
-            int encontrado = 0;
-            for (int i = 0; i < totalClientes; i++) {
-                if (strstr(clientes[i].email, email) != NULL) {
-                    printf("%-5d %-20s %-30s %-15s\n",
-                           clientes[i].id,
-                           clientes[i].nome,
-                           clientes[i].email,
-                           clientes[i].celular);
+            while (fscanf(file, "ID: %d\nNome: %49[^\n]\nEmail: %49[^\n]\nCelular: %19[^\n]\n\n",
+                          &cliente.id, cliente.nome, cliente.email, cliente.celular) != EOF) {
+                if (strstr(cliente.email, email) != NULL) {
+                    printf("%-5d %-20s %-30s %-15s\n", cliente.id, cliente.nome, cliente.email, cliente.celular);
                     encontrado = 1;
                 }
             }
@@ -465,14 +471,10 @@ void menuPesquisaClientes() {
             char celular[20];
             printf("Digite o celular do Cliente: ");
             scanf(" %19[^\n]", celular);
-            int encontrado = 0;
-            for (int i = 0; i < totalClientes; i++) {
-                if (strstr(clientes[i].celular, celular) != NULL) {
-                    printf("%-5d %-20s %-30s %-15s\n",
-                           clientes[i].id,
-                           clientes[i].nome,
-                           clientes[i].email,
-                           clientes[i].celular);
+            while (fscanf(file, "ID: %d\nNome: %49[^\n]\nEmail: %49[^\n]\nCelular: %19[^\n]\n\n",
+                          &cliente.id, cliente.nome, cliente.email, cliente.celular) != EOF) {
+                if (strstr(cliente.celular, celular) != NULL) {
+                    printf("%-5d %-20s %-30s %-15s\n", cliente.id, cliente.nome, cliente.email, cliente.celular);
                     encontrado = 1;
                 }
             }
@@ -480,10 +482,14 @@ void menuPesquisaClientes() {
                 printf("Cliente nao encontrado.\n");
             }
         } else if (opcaoPesquisa == 5) {
+            fclose(file);
             break;
         } else {
             printf("Opcao invalida!\n");
         }
+
+        fclose(file);
+
     } while (1);
 }
 
