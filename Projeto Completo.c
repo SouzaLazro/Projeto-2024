@@ -41,6 +41,7 @@ typedef struct {
 Cliente clientes[MAX_CLIENTES];
 Projeto projetos[MAX_PROJETOS];
 Estoque estoque[MAX_ESTOQUE];
+
 int totalClientes = 0;
 int totalProjetos = 0;
 int totalEstoque = 0;
@@ -65,6 +66,8 @@ void pesquisarProjetoPorID(int id);
 void pesquisarProjetoPorDescricao(char *descricao);
 int lerInteiro();
 int validarData(char *data);
+int idsDisponiveis[MAX_ESTOQUE];
+ int totalIdsDisponiveis = 0;
 
 //menu inicial onde o usuario pode escolher as funçoes que serao utilizadas
 
@@ -607,6 +610,7 @@ void visualizarProjetos() {
         printf("\nMenu de Visualizacao de Projetos:\n");
         printf("1. Exibir Lista Completa\n2. Pesquisar Projeto\n3. Voltar\nEscolha uma opcao: ");
         scanf("%d", &opcaoPesquisa);
+    system("cls");
 
         if (opcaoPesquisa == 1) {
             printf("\nLista de Projetos:\n");
@@ -626,8 +630,11 @@ void visualizarProjetos() {
             return;
         } else {
             printf("Opcao invalida!\n");
+                     sleep(2);
+    system("cls");
         }
     } while (1);
+
 }
 
 void menuPesquisaProjetos() {
@@ -636,6 +643,7 @@ void menuPesquisaProjetos() {
         printf("\nMenu de Pesquisa de Projetos:\n");
         printf("1. Pesquisar por ID\n2. Pesquisar por Descricao\n3. Voltar\nEscolha uma opcao: ");
         scanf("%d", &opcaoPesquisa);
+    system("cls");
 
         if (opcaoPesquisa == 1) {
             int id;
@@ -651,6 +659,8 @@ void menuPesquisaProjetos() {
             break;
         } else {
             printf("Opcao invalida!\n");
+                     sleep(2);
+    system("cls");
         }
     } while (1);
 }
@@ -670,6 +680,8 @@ void pesquisarProjetoPorID(int id) {
     }
     if (!encontrado) {
         printf("Projeto nao encontrado.\n");
+                 sleep(2);
+    system("cls");
     }
 }
 
@@ -687,40 +699,62 @@ void pesquisarProjetoPorDescricao(char* descricao) {
     }
     if (!encontrado) {
         printf("Projeto nao encontrado.\n");
+    system("cls");
     }
 }
 
-void menuEstoque() {
-    int opcao;
-    do {
-        printf("\nMenu de Estoque:\n");
-        printf("1. Adicionar Produto\n");
-        printf("2. Consultar Estoque\n");
-        printf("3. Remover Produto\n");
-        printf("4. Atualizar Quantidade\n");
-        printf("5. Voltar\n");
-        printf("Escolha uma opcao: ");
-        scanf("%d", &opcao);
+void adicionarIDDisponivel(int id) {
+    if (totalIdsDisponiveis < MAX_ESTOQUE) {
+        idsDisponiveis[totalIdsDisponiveis++] = id;
+    }
+}
 
-        switch (opcao) {
-            case 1: adicionarProduto(); break;
-            case 2: consultarEstoque(); break;
-            case 3: removerProduto(); break;
-            case 4: atualizarQuantidade(); break;
-            case 5: break;
-            default: printf("Opcao invalida!\n");
+void ordenarEstoquePorID() {
+    for (int i = 1; i < totalEstoque; i++) {
+        Estoque temp = estoque[i];
+        int j = i - 1;
+        while (j >= 0 && estoque[j].id > temp.id) {
+            estoque[j + 1] = estoque[j];
+            j--;
         }
-    } while (opcao != 5);
+        estoque[j + 1] = temp;
+    }
+}
+
+void salvarEstoqueOrdenado() {
+    FILE *file = fopen("estoque.txt", "w");
+    if (file == NULL) {
+        printf("Erro: Não foi possível abrir o arquivo.\n");
+        return;
+    }
+
+    for (int i = 0; i < totalEstoque; i++) {
+        fprintf(file, "ID: %d\n", estoque[i].id);
+        fprintf(file, "Nome: %s\n", estoque[i].nome);
+        fprintf(file, "Quantidade: %d\n", estoque[i].quantidade);
+        fprintf(file, "Preço: %.2f\n\n", estoque[i].preco);
+    }
+
+    fclose(file);
 }
 
 void adicionarProduto() {
     if (totalEstoque >= MAX_ESTOQUE) {
         printf("Erro: Limite de estoque atingido.\n");
+        sleep(2);
+        system("cls");
         return;
     }
 
+    int id;
+    if (totalIdsDisponiveis > 0) {
+        id = idsDisponiveis[--totalIdsDisponiveis];
+    } else {
+        id = totalEstoque + 1;
+    }
+
     printf("\nCadastro de Produto\n");
-    estoque[totalEstoque].id = totalEstoque + 1;
+    estoque[totalEstoque].id = id;
     printf("Nome do Produto: ");
     scanf(" %49[^\n]", estoque[totalEstoque].nome);
     printf("Quantidade: ");
@@ -729,63 +763,71 @@ void adicionarProduto() {
     scanf("%lf", &estoque[totalEstoque].preco);
     printf("ID: %d\n", estoque[totalEstoque].id);
     printf("Produto cadastrado com sucesso! \n");
+    sleep(2);
+    system("cls");
 
     totalEstoque++;
+    ordenarEstoquePorID();
+    salvarEstoqueOrdenado();
 }
 
-void consultarEstoque() {
-    printf("\nLista de Produtos no Estoque:\n");
-    for (int i = 0; i < totalEstoque; i++) {
-        printf("ID: %-3d Nome: %-20s Quantidade: %-3d Preco: R$%.2f\n",
-               estoque[i].id,
-               estoque[i].nome,
-               estoque[i].quantidade,
-               estoque[i].preco);
-    }
-}
-
-void removerProduto() {
-    int id;
-    printf("Digite o ID do produto a ser removido: ");
-    id = lerInteiro();
-
-    int index = -1;
-    for (int i = 0; i < totalEstoque; i++) {
-        if (estoque[i].id == id) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        for (int i = index; i < totalEstoque - 1; i++) {
-            estoque[i] = estoque[i + 1];
-        }
-        totalEstoque--;
-        printf("Produto removido com sucesso!\n");
-    } else {
-        printf("Produto nao encontrado.\n");
-    }
-}
-
-void atualizarQuantidade() {
-    int id, novaQuantidade;
-    printf("Digite o ID do produto para atualizar a quantidade: ");
-    id = lerInteiro();
-
+void removerProduto(int id) {
     int encontrado = 0;
     for (int i = 0; i < totalEstoque; i++) {
         if (estoque[i].id == id) {
-            printf("Digite a nova quantidade para o produto %s: ", estoque[i].nome);
-            scanf("%d", &novaQuantidade);
-            estoque[i].quantidade = novaQuantidade;
-            printf("Quantidade atualizada com sucesso!\n");
             encontrado = 1;
+            adicionarIDDisponivel(id);
+            for (int j = i; j < totalEstoque - 1; j++) {
+                estoque[j] = estoque[j + 1];
+            }
+            totalEstoque--;
             break;
         }
     }
 
-    if (!encontrado) {
-        printf("Produto nao encontrado.\n");
+    if (encontrado) {
+        printf("Produto removido com sucesso!\n");
+        ordenarEstoquePorID();
+        salvarEstoqueOrdenado();
+    } else {
+        printf("Erro: Produto não encontrado.\n");
+    }
+}
+
+void menuEstoque() {
+    int opcaoEstoque;
+    do {
+        printf("\nMenu de Estoque:\n");
+        printf("1. Adicionar Produto\n");
+        printf("2. Remover Produto\n");
+        printf("3. Consultar Estoque\n");
+        printf("4. Voltar\n");
+        printf("Escolha uma opção: ");
+        opcaoEstoque = lerInteiro();
+        system("cls");
+
+        switch (opcaoEstoque) {
+            case 1: adicionarProduto(); break;
+            case 2: {
+                int id;
+                printf("ID do Produto a ser removido: ");
+                id = lerInteiro();
+                removerProduto(id);
+                break;
+            }
+            case 3: consultarEstoque(); break;
+            case 4: break;
+            default: printf("Opção inválida!\n");
+        }
+    } while (opcaoEstoque != 4);
+}
+
+void consultarEstoque() {
+    printf("\nConsulta de Estoque:\n");
+    for (int i = 0; i < totalEstoque; i++) {
+        printf("ID: %d\n", estoque[i].id);
+        printf("Nome: %s\n", estoque[i].nome);
+        printf("Quantidade: %d\n", estoque[i].quantidade);
+        printf("Preço: %.2f\n\n", estoque[i].preco);
     }
 }
