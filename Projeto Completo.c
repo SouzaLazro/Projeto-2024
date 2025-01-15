@@ -772,29 +772,6 @@ void adicionarProduto() {
     salvarEstoqueOrdenado();
 }
 
-void removerProduto(int id) {
-    int encontrado = 0;
-    for (int i = 0; i < totalEstoque; i++) {
-        if (estoque[i].id == id) {
-            encontrado = 1;
-            adicionarIDDisponivel(id);
-            for (int j = i; j < totalEstoque - 1; j++) {
-                estoque[j] = estoque[j + 1];
-            }
-            totalEstoque--;
-            break;
-        }
-    }
-
-    if (encontrado) {
-        printf("Produto removido com sucesso!\n");
-        ordenarEstoquePorID();
-        salvarEstoqueOrdenado();
-    } else {
-        printf("Erro: Produto não encontrado.\n");
-    }
-}
-
 void menuEstoque() {
     int opcao;
     do {
@@ -810,13 +787,7 @@ void menuEstoque() {
         switch (opcao) {
             case 1: adicionarProduto(); break;
             case 2: consultarEstoque(); break;
-            case 3: {
-                int id;
-                printf("Digite o ID do produto para remover: ");
-                scanf("%d", &id);
-                removerProduto(id);
-                break;
-            }
+            case 3: removerProduto(); break;
             case 4: atualizarQuantidade(); break;
             case 5: break;
             default: printf("Opcao invalida!\n");
@@ -834,6 +805,29 @@ void consultarEstoque() {
     }
 }
 
+void removerProduto() {
+    int id;
+    printf("Digite o ID do produto a ser removido: ");
+    id = lerInteiro();
+
+    int index = -1;
+    for (int i = 0; i < totalEstoque; i++) {
+        if (estoque[i].id == id) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index != -1) {
+        for (int i = index; i < totalEstoque - 1; i++) {
+            estoque[i] = estoque[i + 1];
+        }
+        totalEstoque--;
+        printf("Produto removido com sucesso!\n");
+    } else {
+        printf("Produto nao encontrado.\n");
+    }
+}
 void atualizarQuantidade() {
     int id, novaQuantidade;
     printf("Digite o ID do produto para atualizar a quantidade: ");
