@@ -1,9 +1,12 @@
+//Bibliotecas que executam funçoes,strings ,localidade e tempo
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
 #include <locale.h>
+
+// define o maximo de clientes,projetos e itens
 
 #define MAX_CLIENTES 100
 #define MAX_PROJETOS 100
@@ -39,6 +42,7 @@ int totalProjetos = 0;
 int totalEstoque = 0;
 
 void cadastrarCliente();
+void carregarClientes();
 void cadastrarProjeto();
 void visualizarClientes();
 void visualizarProjetos();
@@ -58,6 +62,7 @@ int validarData(char *data);
 
 int main() {
     setlocale(LC_ALL, "portuguese");
+    carregarClientes();
     int opcao;
     do {
         printf("\nMenu Principal:\n");
@@ -67,7 +72,7 @@ int main() {
         printf("4. Sair\n");
         printf("Escolha uma opção: ");
         opcao = lerInteiro();
-
+        system("cls");
         switch (opcao) {
             case 1: menuCadastro(); break;
             case 2: menuVisualizacao(); break;
@@ -76,8 +81,24 @@ int main() {
             default: printf("Opção inválida!\n");
         }
     } while (opcao != 4);
-
+    system("cls");
     return 0;
+}
+
+void carregarClientes() {
+    FILE *file = fopen("clientes.txt", "r");
+    if (file == NULL) {
+        return;
+    }
+
+    while (fscanf(file, "ID: %d\n", &clientes[totalClientes].id) != EOF) {
+        fscanf(file, "Nome: %[^\n]\n", clientes[totalClientes].nome);
+        fscanf(file, "Email: %[^\n]\n", clientes[totalClientes].email);
+        fscanf(file, "Celular: %[^\n]\n\n", clientes[totalClientes].celular);
+        totalClientes++;
+    }
+
+    fclose(file);
 }
 
 int lerInteiro() {
@@ -164,6 +185,7 @@ void cadastrarCliente() {
     if (file == NULL) {
         printf("Erro: Não foi possível abrir o arquivo.\n");
         return;
+
     }
 
     clientes[totalClientes].id = id;
@@ -190,11 +212,17 @@ void cadastrarCliente() {
 
     totalClientes++;
     printf("Cliente cadastrado com sucesso e salvo no arquivo!\n");
+
+    sleep(2);
+    system("cls");
 }
+
 
 void excluirCliente() {
     if (totalClientes == 0) {
         printf("Erro: Não há clientes cadastrados.\n");
+          sleep(2);
+    system("cls");
         return;
     }
 
@@ -216,7 +244,10 @@ void excluirCliente() {
 
     if (!encontrado) {
         printf("Erro: Cliente com ID %d não encontrado.\n", id);
+           sleep(2);
+    system("cls");
         return;
+
     }
 
     // Atualiza o arquivo "clientes.txt"
@@ -238,9 +269,9 @@ void excluirCliente() {
     rename("clientes_temp.txt", "clientes.txt");
 
     printf("Cliente excluído com sucesso!\n");
+sleep(2);
+system("cls");
 }
-
-
 
 void cadastrarProjeto() {
     if (totalProjetos >= MAX_PROJETOS) {
@@ -291,6 +322,8 @@ void cadastrarProjeto() {
 
     if (clienteIndex == -1) {
         printf("Erro: Cliente não encontrado.\n");
+            sleep(2);
+    system("cls");
         return;
     }
 
@@ -298,7 +331,12 @@ void cadastrarProjeto() {
     projetos[totalProjetos].clienteID = clienteID;
     totalProjetos++;
     printf("Projeto cadastrado com sucesso!\n");
+    sleep(2);
+    system("cls");
 }
+
+
+
 
 void menuCadastro() {
     int opcao;
@@ -311,6 +349,7 @@ void menuCadastro() {
         printf("5. Voltar\n");
         printf("Escolha uma opção: ");
         opcao = lerInteiro();
+system("cls");
 
         switch (opcao) {
             case 1: cadastrarCliente(); break;
@@ -327,6 +366,8 @@ void menuCadastro() {
 void excluirProjeto() {
     if (totalProjetos == 0) {
         printf("Erro: Não há projetos cadastrados.\n");
+            sleep(2);
+    system("cls");
         return;
     }
 
@@ -343,12 +384,16 @@ void excluirProjeto() {
             }
             totalProjetos--;
             printf("Projeto excluído com sucesso!\n");
+                sleep(2);
+    system("cls");
             break;
         }
     }
 
     if (!encontrado) {
         printf("Erro: Projeto com ID %d não encontrado.\n", id);
+            sleep(2);
+    system("cls");
     }
 }
 
@@ -362,6 +407,7 @@ void menuVisualizacao() {
         printf("3. Voltar\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
+    system("cls");
 
         switch (opcao) {
             case 1: visualizarClientes(); break;
@@ -377,6 +423,7 @@ void visualizarClientes() {
         printf("\nMenu de Visualizacao de Clientes:\n");
         printf("1. Exibir Lista Completa\n2. Pesquisar Cliente\n3. Voltar\nEscolha uma opcao: ");
         scanf("%d", &opcaoPesquisa);
+    system("cls");
 
         if (opcaoPesquisa == 1) {
             FILE *file = fopen("clientes.txt", "r");
