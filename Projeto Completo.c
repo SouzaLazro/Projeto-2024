@@ -51,6 +51,7 @@ int totalEstoque = 0;
 void cadastrarCliente();
 void carregarClientes();
 void cadastrarProjeto();
+void excluirProjeto();
 void visualizarClientes();
 void visualizarProjetos();
 void menuCadastro();
@@ -795,31 +796,26 @@ void removerProduto(int id) {
 }
 
 void menuEstoque() {
-    int opcaoEstoque;
+    int opcao;
     do {
         printf("\nMenu de Estoque:\n");
         printf("1. Adicionar Produto\n");
-        printf("2. Remover Produto\n");
-        printf("3. Consultar Estoque\n");
-        printf("4. Voltar\n");
-        printf("Escolha uma opção: ");
-        opcaoEstoque = lerInteiro();
-        system("cls");
+        printf("2. Consultar Estoque\n");
+        printf("3. Remover Produto\n");
+        printf("4. Atualizar Quantidade\n");
+        printf("5. Voltar\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
 
-        switch (opcaoEstoque) {
+        switch (opcao) {
             case 1: adicionarProduto(); break;
-            case 2: {
-                int id;
-                printf("ID do Produto a ser removido: ");
-                id = lerInteiro();
-                removerProduto(id);
-                break;
-            }
-            case 3: consultarEstoque(); break;
-            case 4: break;
-            default: printf("Opção inválida!\n");
+            case 2: consultarEstoque(); break;
+            case 3: removerProduto(); break;
+            case 4: atualizarQuantidade(); break;
+            case 5: break;
+            default: printf("Opcao invalida!\n");
         }
-    } while (opcaoEstoque != 4);
+    } while (opcao != 5);
 }
 
 void consultarEstoque() {
@@ -829,5 +825,26 @@ void consultarEstoque() {
         printf("Nome: %s\n", estoque[i].nome);
         printf("Quantidade: %d\n", estoque[i].quantidade);
         printf("Preço: %.2f\n\n", estoque[i].preco);
+    }
+}
+void atualizarQuantidade() {
+    int id, novaQuantidade;
+    printf("Digite o ID do produto para atualizar a quantidade: ");
+    id = lerInteiro();
+
+    int encontrado = 0;
+    for (int i = 0; i < totalEstoque; i++) {
+        if (estoque[i].id == id) {
+            printf("Digite a nova quantidade para o produto %s: ", estoque[i].nome);
+            scanf("%d", &novaQuantidade);
+            estoque[i].quantidade = novaQuantidade;
+            printf("Quantidade atualizada com sucesso!\n");
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("Produto nao encontrado.\n");
     }
 }
