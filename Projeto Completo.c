@@ -194,7 +194,7 @@ int validarData(char *data) {
     return 1;
 }
 
-
+//salva os dados dos clientes no arquivo clientes.txt.
 
 void salvarClientesOrdenados() {
     FILE *file = fopen("clientes.txt", "w");
@@ -213,6 +213,8 @@ void salvarClientesOrdenados() {
     fclose(file);
 }
 
+//Esta função ordena os clientes por ID usando o algoritmo de ordenação por inserção
+
 void ordenarClientesPorID() {
     for (int i = 1; i < totalClientes; i++) {
         Cliente temp = clientes[i];
@@ -225,6 +227,7 @@ void ordenarClientesPorID() {
     }
 }
 
+//Esta função cadastra um novo cliente no sistema.
 
 void cadastrarCliente() {
     if (totalClientes >= MAX_CLIENTES) {
@@ -272,7 +275,7 @@ void cadastrarCliente() {
 }
 
 
-
+//remove um cliente do sistema com base no ID.
 
 void excluirCliente() {
     if (totalClientes == 0) {
@@ -307,6 +310,7 @@ void excluirCliente() {
     }
 
     // Atualiza o arquivo "clientes.txt"
+    
     FILE *file = fopen("clientes_temp.txt", "w");
     if (file == NULL) {
         printf("Erro: Não foi possível abrir o arquivo.\n");
@@ -328,6 +332,8 @@ void excluirCliente() {
 sleep(2);
 system("cls");
 }
+
+//para cadastrar um novo projeto associado a um cliente.
 
 void cadastrarProjeto() {
     if (totalProjetos >= MAX_PROJETOS) {
@@ -392,7 +398,7 @@ void cadastrarProjeto() {
 }
 
 
-
+//um menu para o usuário escolher entre várias opções relacionadas ao cadastro de clientes e projetos.
 
 void menuCadastro() {
     int opcao;
@@ -418,6 +424,7 @@ system("cls");
     } while (opcao != 5);
 }
 
+//verifica se existe projetos cadastrados e pede o id do projeto a ser excluido e exclui se existir
 
 void excluirProjeto() {
     if (totalProjetos == 0) {
@@ -453,6 +460,7 @@ void excluirProjeto() {
     }
 }
 
+//um menu para o usuário escolher entre várias opções de visualização de clientes e projetos.
 
 void menuVisualizacao() {
     int opcao;
@@ -473,6 +481,11 @@ void menuVisualizacao() {
         }
     } while (opcao != 3);
 }
+
+//um menu para visualizar clientes, oferecendo opções para exibir a lista completa ou pesquisar um cliente específico.
+
+
+
 void visualizarClientes() {
     int opcaoPesquisa;
     do {
@@ -510,7 +523,7 @@ void visualizarClientes() {
     system("cls");
 }
 
-
+//menu de opções para o usuário pesquisar clientes por diferentes critérios. Dependendo da escolha do usuário, a função busca as informações no arquivo clientes.txt.
 
 void menuPesquisaClientes() {
     int opcaoPesquisa;
@@ -605,6 +618,10 @@ void menuPesquisaClientes() {
     system("cls");
 }
 
+//um menu para o usuário visualizar projetos e permite que o usuário exiba a lista completa de projetos ou pesquise um projeto específico.
+
+
+
 void visualizarProjetos() {
     int opcaoPesquisa;
     do {
@@ -638,6 +655,8 @@ void visualizarProjetos() {
 
 }
 
+//um submenu para o usuário pesquisar projetos por ID ou Descrição.
+
 void menuPesquisaProjetos() {
     int opcaoPesquisa;
     do {
@@ -666,6 +685,8 @@ void menuPesquisaProjetos() {
     } while (1);
 }
 
+//pesquisa um projeto pelo ID e exibe suas informações.
+
 void pesquisarProjetoPorID(int id) {
     int encontrado = 0;
     for (int i = 0; i < totalProjetos; i++) {
@@ -686,6 +707,8 @@ void pesquisarProjetoPorID(int id) {
     }
 }
 
+//pesquisa projetos pela descrição e exibe suas informações.
+
 void pesquisarProjetoPorDescricao(char* descricao) {
     int encontrado = 0;
     for (int i = 0; i < totalProjetos; i++) {
@@ -704,11 +727,17 @@ void pesquisarProjetoPorDescricao(char* descricao) {
     }
 }
 
+//adiciona um ID disponível ao array de IDs disponíveis.
+
+
+
 void adicionarIDDisponivel(int id) {
     if (totalIdsDisponiveis < MAX_ESTOQUE) {
         idsDisponiveis[totalIdsDisponiveis++] = id;
     }
 }
+
+//ordena o estoque por ID usando o algoritmo de ordenação por inserção
 
 void ordenarEstoquePorID() {
     for (int i = 1; i < totalEstoque; i++) {
@@ -721,6 +750,8 @@ void ordenarEstoquePorID() {
         estoque[j + 1] = temp;
     }
 }
+
+//salva os dados dos produtos no arquivo estoque.txt
 
 void salvarEstoqueOrdenado() {
     FILE *file = fopen("estoque.txt", "w");
@@ -738,6 +769,8 @@ void salvarEstoqueOrdenado() {
 
     fclose(file);
 }
+
+//adiciona um novo produto ao estoque.
 
 void adicionarProduto() {
     if (totalEstoque >= MAX_ESTOQUE) {
@@ -772,6 +805,8 @@ void adicionarProduto() {
     salvarEstoqueOrdenado();
 }
 
+//exibe um menu para o gerenciamento do estoque.
+
 void menuEstoque() {
     int opcao;
     do {
@@ -795,6 +830,8 @@ void menuEstoque() {
     } while (opcao != 5);
 }
 
+//exibe a lista completa de produtos no estoque.
+
 void consultarEstoque() {
     printf("\nConsulta de Estoque:\n");
     for (int i = 0; i < totalEstoque; i++) {
@@ -804,6 +841,8 @@ void consultarEstoque() {
         printf("Preço: %.2f\n\n", estoque[i].preco);
     }
 }
+
+//remove um produto do estoque com base no ID.
 
 void removerProduto() {
     int id;
@@ -828,6 +867,9 @@ void removerProduto() {
         printf("Produto nao encontrado.\n");
     }
 }
+
+//atualiza a quantidade de um produto no estoque com base no ID.
+
 void atualizarQuantidade() {
     int id, novaQuantidade;
     printf("Digite o ID do produto para atualizar a quantidade: ");
