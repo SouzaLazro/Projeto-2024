@@ -810,7 +810,13 @@ void menuEstoque() {
         switch (opcao) {
             case 1: adicionarProduto(); break;
             case 2: consultarEstoque(); break;
-            case 3: removerProduto(); break;
+            case 3: {
+                int id;
+                printf("Digite o ID do produto para remover: ");
+                scanf("%d", &id);
+                removerProduto(id);
+                break;
+            }
             case 4: atualizarQuantidade(); break;
             case 5: break;
             default: printf("Opcao invalida!\n");
@@ -827,6 +833,7 @@ void consultarEstoque() {
         printf("Preço: %.2f\n\n", estoque[i].preco);
     }
 }
+
 void atualizarQuantidade() {
     int id, novaQuantidade;
     printf("Digite o ID do produto para atualizar a quantidade: ");
