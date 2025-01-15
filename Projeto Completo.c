@@ -12,6 +12,8 @@
 #define MAX_PROJETOS 100
 #define MAX_ESTOQUE 100
 
+// tres estruturas ,clientes,projeto e estoque ,todas com as respectivas informaçoes que seram coletadas
+
 typedef struct {
     int id;
     char nome[50];
@@ -34,12 +36,16 @@ typedef struct {
     double preco;
 } Estoque;
 
+//arrays  com variaveis  para cada funçao
+
 Cliente clientes[MAX_CLIENTES];
 Projeto projetos[MAX_PROJETOS];
 Estoque estoque[MAX_ESTOQUE];
 int totalClientes = 0;
 int totalProjetos = 0;
 int totalEstoque = 0;
+
+// declara tosas as funçoes que vai ser utilizado no codigo
 
 void cadastrarCliente();
 void carregarClientes();
@@ -59,6 +65,8 @@ void pesquisarProjetoPorID(int id);
 void pesquisarProjetoPorDescricao(char *descricao);
 int lerInteiro();
 int validarData(char *data);
+
+//menu inicial onde o usuario pode escolher as funçoes que serao utilizadas
 
 int main() {
     setlocale(LC_ALL, "portuguese");
@@ -85,6 +93,7 @@ int main() {
     return 0;
 }
 
+// carrega os dados do arquivo cliente prenchendo com as informaçoes cadastradas
 void carregarClientes() {
     FILE *file = fopen("clientes.txt", "r");
     if (file == NULL) {
@@ -101,6 +110,8 @@ void carregarClientes() {
     fclose(file);
 }
 
+//le se o usuario informou um numero valido.
+
 int lerInteiro() {
     int valor;
     while (scanf("%d", &valor) != 1) {
@@ -110,20 +121,28 @@ int lerInteiro() {
     return valor;
 }
 
+//verifica se  os caracteres informados sao validos
+
 int validarData(char *data) {
     if (strlen(data) != 8 || strspn(data, "0123456789") != 8) {
         printf("Erro: Formato de data inválido. Use ddmmaaaa.\n");
         return 0;
     }
 
+    //converte cada caracter em inteiros para os valores de dia mes e ano
+
     int dia = (data[0] - '0') * 10 + (data[1] - '0');
     int mes = (data[2] - '0') * 10 + (data[3] - '0');
     int ano = (data[4] - '0') * 1000 + (data[5] - '0') * 100 + (data[6] - '0') * 10 + (data[7] - '0');
+
+//verifica se dias , meses e anos estao validos ,se nao estiver retorna erro
 
     if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || ano < 1900 || ano > 2100) {
         printf("Erro: Data inválida. Verifique os valores de dia, mês ou ano.\n");
         return 0;
     }
+
+    // verifica a quantidade de dias nos meses e ajustando para anos bissextos e da erro se tentar colocar mais que o limite
 
     int diasNoMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     if ((ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0)) {
@@ -135,6 +154,8 @@ int validarData(char *data) {
         return 0;
     }
 
+    //obtem a data atual do sistema  e incrementa um dia
+
     time_t t = time(NULL);
     struct tm tmAtual = *localtime(&t);
 
@@ -145,10 +166,14 @@ int validarData(char *data) {
     tmAtual.tm_mday++;
     mktime(&tmAtual);
 
+    //verifica se a data anterior e a do mesmo dia ou anteriores
+
     if (ano < anoAtual || (ano == anoAtual && mes < mesAtual) || (ano == anoAtual && mes == mesAtual && dia <= diaAtual)) {
         printf("Erro: A data não pode ser anterior ou igual à data atual.\n");
         return 0;
     }
+
+// verifica a data aual para sete anos no futuro
 
     tmAtual.tm_year += 7;
     mktime(&tmAtual);
@@ -160,8 +185,42 @@ int validarData(char *data) {
         return 0;
     }
 
+    //se tudo for bem sucedido ira retornar 1
+
     return 1;
 }
+
+
+
+void salvarClientesOrdenados() {
+    FILE *file = fopen("clientes.txt", "w");
+    if (file == NULL) {
+        printf("Erro: Não foi possível abrir o arquivo.\n");
+        return;
+    }
+
+    for (int i = 0; i < totalClientes; i++) {
+        fprintf(file, "ID: %d\n", clientes[i].id);
+        fprintf(file, "Nome: %s\n", clientes[i].nome);
+        fprintf(file, "Email: %s\n", clientes[i].email);
+        fprintf(file, "Celular: %s\n\n", clientes[i].celular);
+    }
+
+    fclose(file);
+}
+
+void ordenarClientesPorID() {
+    for (int i = 1; i < totalClientes; i++) {
+        Cliente temp = clientes[i];
+        int j = i - 1;
+        while (j >= 0 && clientes[j].id > temp.id) {
+            clientes[j + 1] = clientes[j];
+            j--;
+        }
+        clientes[j + 1] = temp;
+    }
+}
+
 
 void cadastrarCliente() {
     if (totalClientes >= MAX_CLIENTES) {
@@ -177,15 +236,10 @@ void cadastrarCliente() {
     for (int i = 0; i < totalClientes; i++) {
         if (clientes[i].id == id) {
             printf("Erro: ID já existe.\n");
+             sleep(2);
+    system("cls");
             return;
         }
-    }
-
-    FILE *file = fopen("clientes.txt", "a");
-    if (file == NULL) {
-        printf("Erro: Não foi possível abrir o arquivo.\n");
-        return;
-
     }
 
     clientes[totalClientes].id = id;
@@ -204,18 +258,16 @@ void cadastrarCliente() {
         }
     }
 
-    fprintf(file, "ID: %d\n", clientes[totalClientes].id);
-    fprintf(file, "Nome: %s\n", clientes[totalClientes].nome);
-    fprintf(file, "Email: %s\n", clientes[totalClientes].email);
-    fprintf(file, "Celular: %s\n\n", clientes[totalClientes].celular);
-    fclose(file);
-
     totalClientes++;
-    printf("Cliente cadastrado com sucesso e salvo no arquivo!\n");
+    ordenarClientesPorID();
+    salvarClientesOrdenados();
 
+    printf("Cliente cadastrado com sucesso e salvo no arquivo!\n");
     sleep(2);
     system("cls");
 }
+
+
 
 
 void excluirCliente() {
@@ -451,6 +503,7 @@ void visualizarClientes() {
             printf("Opcao invalida!\n");
         }
     } while (1);
+    system("cls");
 }
 
 
@@ -461,6 +514,7 @@ void menuPesquisaClientes() {
         printf("\nMenu de Pesquisa de Clientes:\n");
         printf("1. Pesquisar por ID\n2. Pesquisar por Nome\n3. Pesquisar por Email\n4. Pesquisar por Celular\n5. Voltar\nEscolha uma opcao: ");
         scanf("%d", &opcaoPesquisa);
+    system("cls");
 
         FILE *file = fopen("clientes.txt", "r");
         if (file == NULL) {
@@ -480,16 +534,20 @@ void menuPesquisaClientes() {
                 if (cliente.id == id) {
                     printf("%-5d %-20s %-30s %-15s\n", cliente.id, cliente.nome, cliente.email, cliente.celular);
                     encontrado = 1;
+
                     break;
                 }
             }
             if (!encontrado) {
                 printf("Cliente nao encontrado.\n");
+                 sleep(2);
+    system("cls");
             }
         } else if (opcaoPesquisa == 2) {
             char nome[50];
             printf("Digite o nome do Cliente: ");
             scanf(" %49[^\n]", nome);
+
             while (fscanf(file, "ID: %d\nNome: %49[^\n]\nEmail: %49[^\n]\nCelular: %19[^\n]\n\n",
                           &cliente.id, cliente.nome, cliente.email, cliente.celular) != EOF) {
                 if (strstr(cliente.nome, nome) != NULL) {
@@ -499,6 +557,8 @@ void menuPesquisaClientes() {
             }
             if (!encontrado) {
                 printf("Cliente nao encontrado.\n");
+                 sleep(2);
+    system("cls");
             }
         } else if (opcaoPesquisa == 3) {
             char email[50];
@@ -538,6 +598,7 @@ void menuPesquisaClientes() {
         fclose(file);
 
     } while (1);
+    system("cls");
 }
 
 void visualizarProjetos() {
